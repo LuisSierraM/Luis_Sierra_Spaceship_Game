@@ -1,7 +1,7 @@
 import pygame
 
 from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
-
+from game.components.spaceship import Spaceship
 
 class Game():
     def __init__(self):
@@ -32,6 +32,7 @@ class Game():
                 self.playing = False
 
     def update(self):
+        pass
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
 
