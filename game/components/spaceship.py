@@ -1,8 +1,8 @@
-
 import pygame
 from pygame.sprite import Sprite
 
 from game.utils.constants import SPACESHIP, SCREEN_WIDTH, SCREEN_HEIGHT
+
 class Spaceship(Sprite):
     def __init__(self):
         self.image = SPACESHIP
@@ -27,7 +27,6 @@ class Spaceship(Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-
-spaceship = Spaceship()
+        
 
         
