@@ -16,7 +16,7 @@ class EnemyManager:
             enemy.draw(screen)
 
     def add_enemy(self):
-        if len(self.enemies) < 100:
+        if len(self.enemies) < 1:
             enemy1 = Enemy(ENEMY_1)
             enemy2 = Enemy(ENEMY_2)
             self.enemies.append(enemy1)
