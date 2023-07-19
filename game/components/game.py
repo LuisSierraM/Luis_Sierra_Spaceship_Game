@@ -25,6 +25,7 @@ class Game():
         self.menu = Menu("Press Any Key To Start...", self.screen)
         self.score = 0
         self.death_count = 0
+        self.high_score = self.load_high_score()
 
     def execute(self):
         self.running = True
@@ -42,6 +43,13 @@ class Game():
             self.update()
             self.draw()
         
+        high_score = self.get_high_score()
+        if self.score > high_score:
+            self.high_score = self.score
+            self.save_high_score(self.high_score)
+
+    def save_high_score(self, score):
+        self.high_score = score
 
     def events(self):
         for event in pygame.event.get():
@@ -82,8 +90,9 @@ class Game():
         if self.death_count == 0:
             self.menu.draw(self.screen)
         else:
-            self.menu.update_message("Game over, Press any key to restart")
-        
+            message =  f"Game Over\n\nYour Score: {self.score}\nHigh Score: {self.get_high_score()}\nTotal Deaths: {self.death_count}"
+            self.menu.update_message(message)
+            
         icon = self.image = pygame.transform.scale(ICON, (80, 120))
         self.screen.blit(icon, ((SCREEN_WIDTH // 2) -40, (SCREEN_HEIGHT // 2) - 150))
 
@@ -95,4 +104,30 @@ class Game():
         text_rect = text.get_rect()
         text_rect.center = (1000, 50)
         self.screen.blit(text, text_rect)
+
+    def get_high_score(self):
+        return self.high_score
+    
+    def save_high_score(self, score):
+        #Esta función se utiliza para guardar la puntuación más alta en un archivo
+        #llamado "high_score.txt" cada vez que el juego finaliza con una puntuación
+        #mayor que la puntuación más alta previa. El archivo se crea si no existe
+        #y se sobrescribe si ya existe. Esto asegura que la puntuación más alta
+        #persista entre ejecuciones del juego.
+        with open("high_score.txt", "w") as file:
+            file.write(str(score))
+
+    def load_high_score(self):
+        #Esta función se utiliza para cargar la puntuación más alta desde el archivo
+        #"high_score.txt". Si el archivo no existe, se devuelve el valor predeterminado,
+        #que es 0 en este caso. Si el archivo existe, lee el valor almacenado como
+        #una cadena y lo convierte a un entero antes de devolverlo. Esto permite
+        #mantener el valor del high score entre ejecuciones del juego.
+        try:
+            with open("high_score.txt", "r") as file:
+                high_score = int(file.read())
+        except FileNotFoundError:
+            high_score = 0
+        return high_score
+    
 
