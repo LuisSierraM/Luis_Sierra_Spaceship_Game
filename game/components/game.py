@@ -35,13 +35,10 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    self.player.shoot_bullet(self.bullet_manager)
 
     def update(self):
         user_input = pygame.key.get_pressed()
-        self.player.update(user_input, self.bullet_manager)
+        self.player.update(user_input, self)
         self.enemy_manager.update(self)
         self.bullet_manager.update(self)
         
