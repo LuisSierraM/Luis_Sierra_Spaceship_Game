@@ -5,6 +5,7 @@ from game.components.spaceship	import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
 from game.components.bullets.bullet_manager import BulletManager
 from game.components.menu import Menu
+from game.components.power_ups.power_up_manager import PowerUpManager
 
 class Game():
     def __init__(self):
@@ -26,6 +27,7 @@ class Game():
         self.score = 0
         self.death_count = 0
         self.high_score = self.load_high_score()
+        self.power_up_manager = PowerUpManager()
 
     def execute(self):
         self.running = True
@@ -61,6 +63,7 @@ class Game():
         self.player.update(user_input, self)
         self.enemy_manager.update(self)
         self.bullet_manager.update(self)
+        self.power_up_manager.update(self)
         
     def draw(self):
         self.clock.tick(FPS)
@@ -70,6 +73,8 @@ class Game():
         self.enemy_manager.draw(self.screen)
         self.bullet_manager.draw(self.screen)
         self.draw_score()
+        self.power_up_manager.draw(self.screen)
+        self.draw_power_up_time()
         pygame.display.update()
         pygame.display.flip()
         
@@ -90,7 +95,7 @@ class Game():
         if self.death_count == 0:
             self.menu.draw(self.screen)
         else:
-            message =  f"Game Over\n\nYour Score: {self.score}\nHigh Score: {self.get_high_score()}\nTotal Deaths: {self.death_count}"
+            message =  f"Game Over\nYour Score: {self.score}\nHigh Score: {self.get_high_score()}\nTotal Deaths: {self.death_count}"
             self.menu.update_message(message)
             
         icon = self.image = pygame.transform.scale(ICON, (80, 120))
@@ -109,25 +114,37 @@ class Game():
         return self.high_score
     
     def save_high_score(self, score):
-        #Esta función se utiliza para guardar la puntuación más alta en un archivo
+        #Se guarda la puntuación más alta en un archivo
         #llamado "high_score.txt" cada vez que el juego finaliza con una puntuación
         #mayor que la puntuación más alta previa. El archivo se crea si no existe
-        #y se sobrescribe si ya existe. Esto asegura que la puntuación más alta
-        #persista entre ejecuciones del juego.
-        with open("high_score.txt", "w") as file:
-            file.write(str(score))
+        #y se sobrescribe si ya existe.
+        with open("high_score.txt", "w") as file: #With se utiliza para trabajar un recursos externos.
+            file.write(str(score)) #Se asegura de cerrar estos recursos cuando ya no sean necesarios.
 
     def load_high_score(self):
-        #Esta función se utiliza para cargar la puntuación más alta desde el archivo
-        #"high_score.txt". Si el archivo no existe, se devuelve el valor predeterminado,
-        #que es 0 en este caso. Si el archivo existe, lee el valor almacenado como
-        #una cadena y lo convierte a un entero antes de devolverlo. Esto permite
-        #mantener el valor del high score entre ejecuciones del juego.
-        try:
+        #Se carga la puntuación más alta desde el archivo
+        #"high_score.txt". Lee el valor almacenado como
+        #una cadena y lo convierte a un entero antes de devolverlo.
+        try: #Lee el archivo y lo convierte a entero
             with open("high_score.txt", "r") as file:
                 high_score = int(file.read())
-        except FileNotFoundError:
+        except FileNotFoundError: #Casos excepcionales
             high_score = 0
         return high_score
+     
+    def draw_power_up_time(self):
+        if self.player.has_power_up:
+            time_to_show = round((self.player.power_time_up - pygame.time.get_ticks()) / 1000, 2)
+            if time_to_show >= 0:
+                time_left_text = f"Time left: {time_to_show} seconds"
+                font = pygame.font.Font(FONT_STYLE, 20)
+                text_surface = font.render(time_left_text, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, 50))
+                self.screen.blit(text_surface, text_rect)
+            else:
+                self.player.has_power_up = False
+                self.player.power_up_type = DEFAULT_TYPE
+                self.player.set_image()
+    
     
 
